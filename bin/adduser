@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import _preamble
+from argparse import ArgumentParser
+from purplehosts import passwd, ldap, config, mail
+
+parser = ArgumentParser(description='Add a new user.')
+parser.add_argument('username')
+parser.add_argument('givenname')
+parser.add_argument('surname')
+parser.add_argument('mailaddress')
+args = parser.parse_args()
+
+conf = config.get('general')
+
+pw = passwd.generate()
+mailAddress = args.mailaddress
+
+ldap.add({
+  'cn': args.username,
+  'givenName': args.givenname,
+  'sn': args.surname,
+  'uid': args.username,
+  'userPassword': pw,
+  'uidNumber': str(ldap.nextUid()),
+  'gidNumber': str(conf['gid']),
+  'homeDirectory': "/home/%s" % args.username,
+  'objectClass': ['posixAccount', 'inetOrgPerson'], # inetOrgPerson is needed for mail
+  'loginShell': '/bin/bash',
+  'mail': mailAddress
+})
+
+mail.send({
+  'Subject': 'Account auf ' + conf['domain'],
+  'To': mailAddress,
+  'From': "{0} <root@{0}>".format(conf['domain']),
+  'Body': """Hallo {0},
+
+Dein Account {1} auf {2} wurde angelegt.
+
+Dein Passwort: {3}
+
+Viel Spass,
+{2}""".format(args.givenname, args.username, conf['domain'], pw)
+})
