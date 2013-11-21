@@ -1,0 +1,9 @@
+dn: cn=$username,dc=$root
+cn: $username
+objectClass: inetOrgPerson
+
+uid: $username
+userPassword: $password
+mail: $mailaddress
+givenName: $givenname
+sn: $surname

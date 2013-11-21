@@ -1,30 +1,17 @@
 from __future__ import absolute_import
 
-import ldap
-import ldap.modlist
+from plumbum.cmd import ldapadd
+from plumbum import FG
+from string import Template
 
 import purplehosts.config
 conf = purplehosts.config.get('ldap')
 
-def _getConnection():
-  if "conn" not in _getConnection.__dict__:
-    conn = _getConnection.conn = ldap.initialize(conf['server'])
-    conn.simple_bind_s(conf['bind_dn'], conf['bind_pw'])
-  return _getConnection.conn
-
 def nextUid():
-  return 4000
+  return 4000 # http://www.rexconsulting.net/ldap-protocol-uidnumber.html
+
+userTemplate = Template(purplehosts.config.fileName('user.ldif'))
 
 def add(args):
-  if 'dn' in args:
-    dn = args['dn']
-    del args['dn']
-  else:
-    dn = "cn=%s,%s" % (args['cn'], conf['root'])
-
-  if isinstance(args['objectClass'], basestring):
-    args['objectClass'] = [ args['objectClass'] ]
-  args['objectClass'].append('person')
-
-  conn = _getConnection()
-  conn.add_s(dn, ldap.modlist.addModlist(args))
+  args['root'] = conf['root']
+  (userTemplate.substitute(args) > ldapadd['-w', conf['bind_pw'], '-D', conf['bind_dn']]) & FG

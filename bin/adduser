@@ -17,17 +17,13 @@ pw = passwd.generate()
 mailAddress = args.mailaddress
 
 ldap.add({
-  'cn': args.username,
-  'givenName': args.givenname,
-  'sn': args.surname,
-  'uid': args.username,
-  'userPassword': pw,
-  'uidNumber': str(ldap.nextUid()),
-  'gidNumber': str(conf['gid']),
-  'homeDirectory': "/home/%s" % args.username,
-  'objectClass': ['posixAccount', 'inetOrgPerson'], # inetOrgPerson is needed for mail
-  'loginShell': '/bin/bash',
-  'mail': mailAddress
+  'username': args.username,
+  'givenname': args.givenname,
+  'surname': args.surname,
+  'password': pw,
+  'usernumber': str(ldap.nextUid()),
+  'groupnumber': str(conf['gid']),
+  'mailaddress': mailAddress
 })
 
 mail.send({

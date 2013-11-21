@@ -1,0 +1,15 @@
+dn: cn=$username,dc=$root
+cn: $username
+objectClass: inetOrgPerson
+objectClass: posixAccount
+
+uid: $username
+userPassword: $password
+mail: $mailaddress
+givenName: $givenname
+sn: $surname
+
+uidNumber: $usernumber
+gidNumber: $groupnumber
+homeDirectory: /home/$username
+loginShell: /bin/bash
