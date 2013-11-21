@@ -10,7 +10,7 @@ conf = purplehosts.config.get('ldap')
 def nextUid():
   return 4000 # http://www.rexconsulting.net/ldap-protocol-uidnumber.html
 
-userTemplate = Template(purplehosts.config.fileName('user.ldif'))
+userTemplate = Template(purplehosts.config.getFile('user.ldif'))
 
 def add(args):
   args['root'] = conf['root']
