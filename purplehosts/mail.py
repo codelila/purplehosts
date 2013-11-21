@@ -8,4 +8,4 @@ def send(args):
   msg['From'] = args['From'] ## Default
   msg['To'] = args['To']
 
-  (sendmail['-t'] < msg.as_string()) & FG
+  (sendmail['-t'] << msg.as_string())()
