@@ -21,4 +21,4 @@ loginShell: /bin/bash
 dn: cn=GROUP_NAME, $groups_root
 changetype: modify
 add: member
-member: cn=$username,dc=$people_root
+member: cn=$username,$people_root
