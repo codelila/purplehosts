@@ -1,4 +1,4 @@
-dn: cn=$username,$root
+dn: cn=$username,ou=people,$root
 # Meta attributes
 cn: $username
 objectClass: inetOrgPerson
