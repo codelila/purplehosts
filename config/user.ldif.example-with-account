@@ -1,14 +1,15 @@
-dn: cn=$username,dc=$root
+dn: cn=$username,$root
+# Meta attributes
 cn: $username
 objectClass: inetOrgPerson
 objectClass: posixAccount
-
+# Basic attributes (for inetOrgPerson)
 uid: $username
 userPassword: $password
 mail: $mailaddress
 givenName: $givenname
 sn: $surname
-
+# Account related attributes (for posixAccount)
 uidNumber: $usernumber
 gidNumber: $groupnumber
 homeDirectory: /home/$username
