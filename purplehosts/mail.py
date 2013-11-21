@@ -1,4 +1,5 @@
-import subprocess
+from plumbum import FG
+from plumbum.cmd import sendmail
 from email.mime.text import MIMEText
 
 def send(args):
@@ -7,5 +8,4 @@ def send(args):
   msg['From'] = args['From'] ## Default
   msg['To'] = args['To']
 
-  p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
-  p.communicate(msg.as_string())
+  (sendmail['-t'] < msg.as_string()) & FG
