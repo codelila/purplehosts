@@ -14,4 +14,4 @@ userTemplate = Template(purplehosts.config.fileName('user.ldif'))
 
 def add(args):
   args['root'] = conf['root']
-  (userTemplate.substitute(args) > ldapadd['-w', conf['bind_pw'], '-D', conf['bind_dn']]) & FG
+  (ldapadd['-w', conf['bind_pw'], '-D', conf['bind_dn']] << userTemplate.substitute(args))()
