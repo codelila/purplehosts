@@ -1,5 +1,7 @@
 server = 'ldap://localhost:389'
 root = 'dc=example,dc=net'
 
+people_root = 'ou=people,%s' % root
+
 bind_dn = 'cn=admin,%s' % root
 bind_pw = 'password'

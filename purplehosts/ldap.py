@@ -13,5 +13,5 @@ def nextUid():
 userTemplate = Template(purplehosts.config.getFile('user.ldif'))
 
 def add(args):
-  args['root'] = conf['root']
+  args['root'] = conf['people_root']
   (ldapadd['-w', conf['bind_pw'], '-D', conf['bind_dn']] << userTemplate.substitute(args))()
