@@ -1,4 +1,5 @@
-dn: cn=$username,$root
+dn: cn=$username,$people_root
+changetype: add
 # Meta attributes
 cn: $username
 objectClass: inetOrgPerson
@@ -8,3 +9,10 @@ userPassword: $password
 mail: $mailaddress
 givenName: $givenname
 sn: $surname
+
+-
+
+dn: cn=GROUP_NAME, $groups_root
+changetype: modify
+add: member
+member: cn=$username,dc=$people_root

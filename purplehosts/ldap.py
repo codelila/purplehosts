@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from plumbum.cmd import ldapadd
+from plumbum.cmd import ldapmodify
 from plumbum import FG
 from string import Template
 
@@ -13,5 +13,6 @@ def nextUid():
 userTemplate = Template(purplehosts.config.getFile('user.ldif'))
 
 def add(args):
-  args['root'] = conf['people_root']
-  (ldapadd['-w', conf['bind_pw'], '-D', conf['bind_dn']] << userTemplate.substitute(args))()
+  args['people_root'] = conf['people_root']
+  args['groups_root'] = conf['groups_root']
+  (ldapmodify['-w', conf['bind_pw'], '-D', conf['bind_dn']] << userTemplate.substitute(args))()
