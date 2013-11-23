@@ -34,7 +34,7 @@ class TLS:
 
   def make_key(self):
     fn = self._getFilename('key')
-    (reduce(lambda call, param: call['-pkeyopt', param], conf['openssl_pkeyopts'], openssl['genpkey']) > fn)()
+    (reduce(lambda call, param: call['-pkeyopt', param], conf['openssl_pkeyopts'], openssl['genpkey', '-algorithm', 'RSA']) > fn)()
     return fn
 
   def make_csr(self):
