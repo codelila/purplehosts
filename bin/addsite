@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+import _preamble
+from argparse import ArgumentParser, REMAINDER
+from purplehosts import addsite
+
+parser = ArgumentParser(description='Adds a new site.')
+parser.add_argument('domain')
+#parser.add_argument('--ldap-basic-auth', dest='ldap_basic_auth', action='store_true')
+parser.add_argument('additional_args', nargs=REMAINDER)
+args = parser.parse_args()
+
+addsite.run(args)

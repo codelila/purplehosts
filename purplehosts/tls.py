@@ -26,15 +26,21 @@ class TLS:
     return self.filename_template.substitute({'ext': ext})
 
   def make(self):
-    self.make_key()
-    self.make_csr()
-    self.make_crt()
+    return {
+      'key': self.make_key(),
+      'csr': self.make_csr(),
+      'crt': self.make_crt()
+    }
 
   def make_key(self):
-    (reduce(lambda call, param: call['-pkeyopt', param], conf['openssl_pkeyopts'], openssl['genpkey']) > self._getFilename('key'))()
+    fn = self._getFilename('key')
+    (reduce(lambda call, param: call['-pkeyopt', param], conf['openssl_pkeyopts'], openssl['genpkey']) > fn)()
+    return fn
 
   def make_csr(self):
-    (openssl['req -new -batch -subj "/CN=%s" -key %s' % (self.site, self._getFilename('key'))] > self._getFilename('csr'))()
+    fn = self._getFilename('csr')
+    (openssl['req -new -batch -subj "/CN=%s" -key %s' % (self.site, self._getFilename('key'))] > fn)()
+    return fn
 
   def make_crt(self):
     print("Paste the following CSR to CAcert:")
@@ -49,4 +55,6 @@ class TLS:
       line = raw_input()
       crt += line
 
-    (echo << crt > self._getFilename('crt'))()
+    fn = self._getFilename('crt')
+    (echo << crt > fn)()
+    return fn

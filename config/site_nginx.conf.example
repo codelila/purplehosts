@@ -1,0 +1,31 @@
+upstream {{tech}}_{{host}} {
+    server unix:/home/{{username}}/{{tech}}_{{host}}.socket;
+}
+
+server {
+    listen              80;
+    listen              443 ssl;
+    ssl_certificate     {{tls_paths.crt}};
+    ssl_certificate_key {{tls_paths.key}};
+    server_name         {{fqdn}};
+
+    location / {
+        root            /home/{{username}}/public;
+
+{{#ldap-basic-auth}}
+        auth_pam              "LDAP";
+        auth_pam_service_name "nginx_ldap";
+{{/ldap-basic-auth}}
+
+        try_files $uri @proxy;
+    }
+
+    location @proxy {
+        include         fastcgi_params;
+{{#ldap-basic-auth}}
+        proxy_set_header REMOTE_USER $remote_user;
+{{/ldap-basic-auth}}
+        proxy_pass      http://{{tech}}_{{host}};
+        proxy_redirect  off;
+    }
+}
