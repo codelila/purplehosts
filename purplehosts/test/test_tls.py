@@ -21,7 +21,7 @@ class TestTls(unittest.TestCase):
 
   def test_make_key_no_pkeyopts(self):
     keypath = self.tls.make_key()
-    commandMock.__getitem__.assert_called_with('genpkey')
+    commandMock.__getitem__.assert_called_with(('genpkey', '-algorithm', 'RSA'))
     commandMock.__gt__.assert_called_with('/etc/ssl/example.org/test.key')
     self.assertEqual(keypath, '/etc/ssl/example.org/test.key')
 
