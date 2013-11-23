@@ -44,7 +44,7 @@ class TLS:
 
   def make_crt(self):
     print("Paste the following CSR to CAcert:")
-    cat(self._getFilename('csr')) & FG
+    (cat < self._getFilename('csr')) & FG
     rm('-f %s' % self._getFilename('crt'))
 
     print("Enter certificate:")

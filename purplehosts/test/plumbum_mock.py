@@ -6,6 +6,7 @@ commandMock = Mock(spec=BaseCommand)
 commandMock.__getitem__ = Mock(return_value=commandMock)
 commandMock.__lshift__ = Mock(return_value=commandMock)
 commandMock.__gt__ = Mock(return_value=commandMock)
+commandMock.__lt__ = Mock(return_value=commandMock)
 
 import sys
 import plumbum.cmd
