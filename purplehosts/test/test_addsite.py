@@ -17,7 +17,7 @@ import purplehosts.addsite
 class TestAddsite(unittest.TestCase):
   @patch('purplehosts.tls')
   def test_run(self, tls):
-    tls.TLS.return_value.make_all.return_value = {
+    tls.TLS.return_value.make.return_value = {
       'crt': 'file.crt',
       'csr': 'file.csr',
       'key': 'file.key'
@@ -27,7 +27,7 @@ class TestAddsite(unittest.TestCase):
     purplehosts.addsite.run(Args(additional_args=[], domain='test.example.org'))
 
     tls.TLS.assert_called_with('test.example.org')
-    self.assertTrue(tls.TLS.return_value.make_all.called)
+    self.assertTrue(tls.TLS.return_value.make.called)
     commandMock.__getitem__.assert_any_call('--system')
     commandMock.assert_any_call('test')
     commandMock.__gt__.assert_called_with('/etc/nginx/test.conf')

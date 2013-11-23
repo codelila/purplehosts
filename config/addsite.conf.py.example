@@ -1,2 +1,2 @@
-system_user_name_template = '$tech_$host'
+system_user_name_template = '${tech}_$host'
 nginx_conf_filename_template = '/etc/nginx/sites-available/$fqdn'

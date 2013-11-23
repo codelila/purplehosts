@@ -40,7 +40,7 @@ def run(args):
   nginx_conf_filename = nginx_conf_filename_tpl.substitute(substitutes)
 
   # Start doing things
-  substitutes['tls_paths'] = purplehosts.tls.TLS(args.domain).make_all()
+  substitutes['tls_paths'] = purplehosts.tls.TLS(args.domain).make()
   # Rerender nginx conf with actual tls paths
   nginx_conf = renderer.render(nginx_conf_tpl, substitutes)
   adduser['--system'](username)
