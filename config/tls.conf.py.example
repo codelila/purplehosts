@@ -1,0 +1,3 @@
+filename_template = "/etc/ssl/$domain/$host.$ext"
+
+openssl_pkeyopts = ['rsa_keygen_bits:2048']

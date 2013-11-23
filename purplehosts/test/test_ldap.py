@@ -1,17 +1,16 @@
 import unittest
 from mock import Mock
 
-import purplehosts.config
+import purplehosts.test.mock_config
 
-purplehosts.config.get = Mock(return_value={
+purplehosts.test.mock_config.get.return_value = {
   'people_root': 'PEOPLE_ROOT',
   'groups_root': 'GROUPS_ROOT',
   'bind_pw': 'BIND_PW',
   'bind_dn': 'BIND_DN'
-})
-purplehosts.config.getFile = Mock(return_value=
-  "$username"
-)
+}
+
+purplehosts.test.mock_config.getFile.return_value = "$username"
 
 from purplehosts.test.plumbum_mock import commandMock
 
