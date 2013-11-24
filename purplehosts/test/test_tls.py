@@ -11,6 +11,9 @@ purplehosts.test.mock_config.get.return_value = {
 from purplehosts.test.plumbum_mock import commandMock
 import purplehosts.tls
 
+def retArr(arr):
+  return lambda: arr.pop(0)
+
 class TestTls(unittest.TestCase):
 
   def setUp(self):
@@ -38,7 +41,7 @@ class TestTls(unittest.TestCase):
 
   def test_make_csr(self):
     csrpath = self.tls.make_csr()
-    commandMock.__getitem__.assert_called_with('req -new -batch -subj "/CN=test.example.org" -key /etc/ssl/example.org/test.key')
+    commandMock.__getitem__.assert_called_with(('req', '-new', '-batch', '-subj', '/CN=test.example.org', '-key', '/etc/ssl/example.org/test.key'))
     commandMock.__gt__.assert_called_with('/etc/ssl/example.org/test.csr')
     self.assertEqual(csrpath, '/etc/ssl/example.org/test.csr')
 
