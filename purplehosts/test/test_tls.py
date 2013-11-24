@@ -46,10 +46,11 @@ class TestTls(unittest.TestCase):
     self.assertEqual(csrpath, '/etc/ssl/example.org/test.csr')
 
   @patch('purplehosts.tls.print',create=True)
-  @patch('purplehosts.tls.raw_input',create=True, return_value='-----END CERTIFICATE-----')
+  @patch('purplehosts.tls.raw_input',create=True, side_effect=retArr(['certdata', '-----END CERTIFICATE-----']))
   def test_make_crt(self, print_mock, raw_input_mock):
     crtpath = self.tls.make_crt()
     self.assertEqual(crtpath, '/etc/ssl/example.org/test.crt')
+    commandMock.__lshift__.assert_called_with('certdata\n-----END CERTIFICATE-----\n')
 
   @patch('purplehosts.tls.TLS.make_key', return_value='file.key')
   @patch('purplehosts.tls.TLS.make_csr', return_value='file.csr')

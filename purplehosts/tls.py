@@ -53,7 +53,7 @@ class TLS:
 
     while line != "-----END CERTIFICATE-----":
       line = raw_input()
-      crt += line
+      crt += line + '\n'
 
     fn = self._getFilename('crt')
     (cat << crt > fn)()
