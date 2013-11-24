@@ -1,7 +1,7 @@
 import os.path
 from string import Template
 
-from plumbum.cmd import adduser, echo, ln, nginx
+from plumbum.cmd import adduser, cat, ln, nginx
 from pystache import Renderer
 
 renderer = Renderer(missing_tags='strict')
@@ -44,7 +44,7 @@ def run(args):
   # Rerender nginx conf with actual tls paths
   nginx_conf = renderer.render(nginx_conf_tpl, substitutes)
   adduser['--system'](username)
-  (echo << nginx_conf > nginx_conf_filename)()
+  (cat << nginx_conf > nginx_conf_filename)()
 
   ln['-s'](os.path.relpath(nginx_conf_filename, '/etc/nginx/sites-enabled/'), '/etc/nginx/sites-enabled/')
   nginx('-t')

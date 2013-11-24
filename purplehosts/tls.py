@@ -39,7 +39,7 @@ class TLS:
 
   def make_csr(self):
     fn = self._getFilename('csr')
-    (openssl['req -new -batch -subj "/CN=%s" -key %s' % (self.site, self._getFilename('key'))] > fn)()
+    (openssl['req', '-new', '-batch', '-subj', '/CN=%s' % self.site, '-key', self._getFilename('key')] > fn)()
     return fn
 
   def make_crt(self):
