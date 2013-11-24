@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from plumbum.cmd import openssl, mkdir, cat, rm, echo
+from plumbum.cmd import openssl, mkdir, cat, rm
 from plumbum import FG
 
 from os.path import dirname
@@ -56,5 +56,6 @@ class TLS:
       crt += line
 
     fn = self._getFilename('crt')
-    (echo << crt > fn)()
+    (cat << crt > fn)()
+
     return fn
