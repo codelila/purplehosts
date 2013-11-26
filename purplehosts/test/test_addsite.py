@@ -10,7 +10,7 @@ purplehosts.test.mock_config.get.return_value = {
   'nginx_conf_filename_template': '/etc/nginx/$host.conf'
 }
 
-purplehosts.test.mock_config.getFile.return_value = "{{host}} {{fqdn}} nginx {{tls_paths.crt}}"
+purplehosts.test.mock_config.getFile.return_value = "{{host}} {{fqdn}} nginx {{tls_paths.crt}} {{username}}"
 
 import purplehosts.addsite
 
@@ -31,4 +31,4 @@ class TestAddsite(unittest.TestCase):
     commandMock.__getitem__.assert_any_call('--system')
     commandMock.assert_any_call('test')
     commandMock.__gt__.assert_called_with('/etc/nginx/test.conf')
-    commandMock.__lshift__.assert_called_with('test test.example.org nginx file.crt')
+    commandMock.__lshift__.assert_called_with('test test.example.org nginx file.crt test')

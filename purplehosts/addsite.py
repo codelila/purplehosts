@@ -26,6 +26,8 @@ def run(args):
   import purplehosts.tls
   from purplehosts.utils import getHost, getDomain
 
+  actions = []
+
   substitutes = reduce(_parseArg, args.additional_args, {
     'fqdn': args.domain,
     'host': getHost(args.domain),
@@ -33,8 +35,13 @@ def run(args):
     'tls_paths': {'crt': 'crt', 'csr': 'csr', 'key': 'key'}
   })
 
-  username = username_tpl.substitute(substitutes)
-  substitutes['username'] = username
+  # Crude hack: Do not add a new account if username is passed as arg
+  if not substitutes['username']:
+    from purplehosts.action.addposixaccount import AddPosixAccount
+    actions.append(AddPosixAccount(username_template = username_tpl))
+
+  substitutes = reduce(lambda subs, action: action.prepare(subs), actions, substitutes)
+
   # Test nginx conf tpl before doing anything
   nginx_conf = renderer.render(nginx_conf_tpl, substitutes)
   nginx_conf_filename = nginx_conf_filename_tpl.substitute(substitutes)
@@ -43,8 +50,10 @@ def run(args):
   substitutes['tls_paths'] = purplehosts.tls.TLS(args.domain).make()
   # Rerender nginx conf with actual tls paths
   nginx_conf = renderer.render(nginx_conf_tpl, substitutes)
-  adduser['--system'](username)
   (cat << nginx_conf > nginx_conf_filename)()
+
+  for action in actions:
+    action.execute()
 
   ln['-s'](os.path.relpath(nginx_conf_filename, '/etc/nginx/sites-enabled/'), '/etc/nginx/sites-enabled/')
   nginx('-t')
