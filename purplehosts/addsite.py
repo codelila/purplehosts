@@ -36,7 +36,7 @@ def run(args):
   })
 
   # Crude hack: Do not add a new account if username is passed as arg
-  if not substitutes['username']:
+  if not 'username' in substitutes or not substitutes['username']:
     from purplehosts.action.addposixaccount import AddPosixAccount
     actions.append(AddPosixAccount(username_template = username_tpl))
 
