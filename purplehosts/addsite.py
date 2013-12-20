@@ -1,6 +1,6 @@
 from string import Template
 
-from purplehosts.argdict import ArgDict
+from purplehosts.actionbundle import ActionBundle
 
 import purplehosts.config
 conf = purplehosts.config.get('addsite')
@@ -19,48 +19,33 @@ def _parseArg(sub_dict, arg):
   return sub_dict
 
 def run(args):
+  # Parse args
   from purplehosts.utils import getHost, getDomain
-
-  actions = []
-
-  substitutes = ArgDict()
-  substitutes.update({
+  substitutes = {
     'fqdn': args.domain,
     'host': getHost(args.domain),
     'domain': getDomain(args.domain)
-  })
+  }
   substitutes = reduce(_parseArg, args.additional_args, substitutes)
+
+  # Create actions list
+  from purplehosts.action.createtlscert import CreateTLSCert
+  from purplehosts.action.addnginxsite import AddNginxSite
+
+  actions = [
+    CreateTLSCert(args.domain),
+    AddNginxSite(conf_template = nginx_conf_tpl, filename_template = nginx_conf_filename_tpl)
+  ]
 
   # Crude hack: Do not add a new account if username is passed as arg
   if not 'username' in substitutes or not substitutes['username']:
     from purplehosts.action.addposixaccount import AddPosixAccount
-    actions.append(AddPosixAccount(username_template = username_tpl))
+    actions.insert(0, AddPosixAccount(username_template = username_tpl))
 
-  from purplehosts.action.createtlscert import CreateTLSCert
-  actions.append(CreateTLSCert(args.domain))
+  actionbundle = ActionBundle(actions)
 
-  from purplehosts.action.addnginxsite import AddNginxSite
-  actions.append(AddNginxSite(conf_template = nginx_conf_tpl, filename_template = nginx_conf_filename_tpl))
+  # Prepare actions
+  actionbundle.prepare(substitutes)
 
-  # Add placeholders so that depending prepares work
-  provided = []
-  for action in actions:
-    provided.extend(action.provides)
-  substitutes.start_testing(provided)
-
-  # Testing prepares
-  for action in actions:
-    new_subs = action.prepare(substitutes)
-    for k in action.provides:
-      substitutes[k] = new_subs[k]
-
-  # Running prepares
-  substitutes.start_preparing()
-  for action in actions:
-    new_subs = action.prepare(substitutes)
-    for k in action.provides:
-      substitutes[k] = new_subs[k]
-
-  # Start doing things
-  for action in actions:
-    action.execute()
+  # Execute actions
+  actionbundle.execute()
