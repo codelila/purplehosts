@@ -1,10 +1,6 @@
-import os.path
 from string import Template
 
-from plumbum.cmd import adduser, cat, ln, nginx
-from pystache import Renderer
-
-renderer = Renderer(missing_tags='strict')
+from purplehosts.argdict import ArgDict
 
 import purplehosts.config
 conf = purplehosts.config.get('addsite')
@@ -23,38 +19,48 @@ def _parseArg(sub_dict, arg):
   return sub_dict
 
 def run(args):
-  import purplehosts.tls
   from purplehosts.utils import getHost, getDomain
 
   actions = []
 
-  substitutes = reduce(_parseArg, args.additional_args, {
+  substitutes = ArgDict()
+  substitutes.update({
     'fqdn': args.domain,
     'host': getHost(args.domain),
-    'domain': getDomain(args.domain),
-    'tls_paths': {'crt': 'crt', 'csr': 'csr', 'key': 'key'}
+    'domain': getDomain(args.domain)
   })
+  substitutes = reduce(_parseArg, args.additional_args, substitutes)
 
   # Crude hack: Do not add a new account if username is passed as arg
   if not 'username' in substitutes or not substitutes['username']:
     from purplehosts.action.addposixaccount import AddPosixAccount
     actions.append(AddPosixAccount(username_template = username_tpl))
 
-  substitutes = reduce(lambda subs, action: action.prepare(subs), actions, substitutes)
+  from purplehosts.action.createtlscert import CreateTLSCert
+  actions.append(CreateTLSCert(args.domain))
 
-  # Test nginx conf tpl before doing anything
-  nginx_conf = renderer.render(nginx_conf_tpl, substitutes)
-  nginx_conf_filename = nginx_conf_filename_tpl.substitute(substitutes)
+  from purplehosts.action.addnginxsite import AddNginxSite
+  actions.append(AddNginxSite(conf_template = nginx_conf_tpl, filename_template = nginx_conf_filename_tpl))
+
+  # Add placeholders so that depending prepares work
+  provided = []
+  for action in actions:
+    provided.extend(action.provides)
+  substitutes.start_testing(provided)
+
+  # Testing prepares
+  for action in actions:
+    new_subs = action.prepare(substitutes)
+    for k in action.provides:
+      substitutes[k] = new_subs[k]
+
+  # Running prepares
+  substitutes.start_preparing()
+  for action in actions:
+    new_subs = action.prepare(substitutes)
+    for k in action.provides:
+      substitutes[k] = new_subs[k]
 
   # Start doing things
-  substitutes['tls_paths'] = purplehosts.tls.TLS(args.domain).make()
-  # Rerender nginx conf with actual tls paths
-  nginx_conf = renderer.render(nginx_conf_tpl, substitutes)
-  (cat << nginx_conf > nginx_conf_filename)()
-
   for action in actions:
     action.execute()
-
-  ln['-s'](os.path.relpath(nginx_conf_filename, '/etc/nginx/sites-enabled/'), '/etc/nginx/sites-enabled/')
-  nginx('-t')
-

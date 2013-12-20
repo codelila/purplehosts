@@ -4,9 +4,9 @@ class BaseAction(object):
   __metaclass__ = ABCMeta
 
   @abstractmethod
-  def prepare(self):
-    pass
+  def prepare(self, args):
+    self.prepared = True
 
   @abstractmethod
   def execute(self):
-    pass
+    self.executed = True
