@@ -1,12 +1,15 @@
 import unittest
-from mock import patch, call
+from mock import patch
 
 from purplehosts.test.plumbum_mock import commandMock
 
 class TestAddsite(unittest.TestCase):
-  @patch('purplehosts.tls.TLS')
-  def test_run(self, TLS):
-    TLS.return_value._getFilename.return_value = 'file.crt'
+  @patch('purplehosts.action.createtlscert.CreateTLSCert')
+  def test_run(self, CreateTLSCert):
+    CreateTLSCert.return_value.provides = [ 'tls_crt_path' ]
+    CreateTLSCert.return_value.prepare.return_value = {
+      'tls_crt_path': 'file.crt'
+    }
 
     import purplehosts.test.mock_config
     purplehosts.test.mock_config.get.return_value = {
@@ -22,8 +25,8 @@ class TestAddsite(unittest.TestCase):
     Args = namedtuple('Args', ['additional_args', 'domain'])
     purplehosts.addsite.run(Args(additional_args=[], domain='test.example.org'))
 
-    TLS.assert_called_with('test.example.org')
-    self.assertTrue(TLS.return_value.make.called)
+    CreateTLSCert.assert_called_with('test.example.org')
+    self.assertTrue(CreateTLSCert.return_value.execute.called)
     commandMock.__getitem__.assert_any_call('--system')
     commandMock.assert_any_call('test')
     commandMock.__gt__.assert_called_with('/etc/nginx/test.conf')
