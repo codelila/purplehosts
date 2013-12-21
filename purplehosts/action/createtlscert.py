@@ -1,6 +1,5 @@
 from purplehosts.action.baseaction import BaseAction
 
-from purplehosts.tls import TLS
 
 class CreateTLSCert(BaseAction):
   provides = [ 'tls_key_path', 'tls_crt_path' ]
@@ -9,6 +8,7 @@ class CreateTLSCert(BaseAction):
     pass
 
   def prepare(self, args):
+    from purplehosts.tls import TLS
     self._tls = TLS(args)
     _ret = {
       'tls_key_path': self._tls._getFilename('key'),

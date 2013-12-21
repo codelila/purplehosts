@@ -1,11 +1,10 @@
-from plumbum.cmd import adduser
-
 from purplehosts.action.baseaction import BaseAction
 
 class AddPosixAccount(BaseAction):
   provides = [ 'username' ]
 
   def __init__(self, username_template):
+    from plumbum.cmd import adduser
     self._username_template = username_template
     self._adduser = adduser['--system']
 

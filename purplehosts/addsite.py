@@ -21,12 +21,11 @@ def _parseArg(sub_dict, arg):
 def run(args):
   # Parse args
   from purplehosts.utils import getHost, getDomain
-  substitutes = {
+  substitutes = reduce(_parseArg, args.additional_args, {
     'fqdn': args.domain,
     'host': getHost(args.domain),
     'domain': getDomain(args.domain)
-  }
-  substitutes = reduce(_parseArg, args.additional_args, substitutes)
+  })
 
   # Create actions list
   from purplehosts.action.createtlscert import CreateTLSCert
