@@ -25,7 +25,7 @@ class TestAddsite(unittest.TestCase):
     Args = namedtuple('Args', ['additional_args', 'domain'])
     purplehosts.addsite.run(Args(additional_args=[], domain='test.example.org'))
 
-    CreateTLSCert.assert_called_with('test.example.org')
+    CreateTLSCert.assert_called_with()
     self.assertTrue(CreateTLSCert.return_value.execute.called)
     commandMock.__getitem__.assert_any_call('--system')
     commandMock.assert_any_call('test')

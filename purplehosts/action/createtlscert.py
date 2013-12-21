@@ -3,12 +3,13 @@ from purplehosts.action.baseaction import BaseAction
 from purplehosts.tls import TLS
 
 class CreateTLSCert(BaseAction):
-  provides = [ 'tls_key_path', 'tls_crt_path']
+  provides = [ 'tls_key_path', 'tls_crt_path' ]
 
-  def __init__(self, site):
-    self._tls = TLS(site)
+  def __init__(self):
+    pass
 
   def prepare(self, args):
+    self._tls = TLS(args)
     _ret = {
       'tls_key_path': self._tls._getFilename('key'),
       'tls_crt_path': self._tls._getFilename('crt')

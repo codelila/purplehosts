@@ -17,7 +17,7 @@ def retArr(arr):
 class TestTls(unittest.TestCase):
 
   def setUp(self):
-    self.tls = purplehosts.tls.TLS('test.example.org')
+    self.tls = purplehosts.tls.TLS({'fqdn': 'test.example.org', 'domain': 'example.org', 'host': 'test'})
 
   def test_init(self):
     commandMock.__getitem__.assert_called_with(('-p', '/etc/ssl/example.org'))

@@ -7,7 +7,6 @@ from os.path import dirname
 from string import Template
 
 import purplehosts.config
-from purplehosts.utils import getHost, getDomain
 
 conf = purplehosts.config.get('tls')
 
@@ -15,11 +14,9 @@ filename_template = Template(conf['filename_template'])
 
 class TLS:
 
-  def __init__(self, site):
-    host = getHost(site)
-    domain = getDomain(site)
-    self.filename_template = Template(filename_template.safe_substitute({'domain': domain, 'fqdn': site, 'host': host}))
-    self.site = site
+  def __init__(self, args):
+    self.filename_template = Template(filename_template.safe_substitute(args))
+    self.site = args['fqdn']
     mkdir['-p', dirname(self.filename_template.template)]()
 
   def _getFilename(self, ext):

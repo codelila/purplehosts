@@ -33,7 +33,7 @@ def run(args):
   from purplehosts.action.addnginxsite import AddNginxSite
 
   actions = [
-    CreateTLSCert(args.domain),
+    CreateTLSCert(),
     AddNginxSite(conf_template = nginx_conf_tpl, filename_template = nginx_conf_filename_tpl)
   ]
 
