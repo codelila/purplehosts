@@ -9,7 +9,7 @@ class AddPosixAccount(BaseAction):
     self._adduser = adduser['--system']
 
   def prepare(self, args):
-    self._username = self._username_template.substitute(args)
+    self._username = self._username_template.value(args)
     super(AddPosixAccount, self).prepare(args)
     return { 'username': self._username }
 

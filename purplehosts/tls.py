@@ -10,13 +10,16 @@ import purplehosts.config
 
 conf = purplehosts.config.get('tls')
 
-filename_template = Template(conf['filename_template'])
+filename_template = conf['filename_template']
 
 class TLS:
-
   def __init__(self, args):
-    self.filename_template = Template(filename_template.safe_substitute(args))
+    subst_args = {}
+    subst_args.update(args)
+    subst_args['ext'] = '${ext}'
+    self.filename_template = Template(filename_template.value(subst_args))
     self.site = args['fqdn']
+    self.pkeyopts = conf['openssl_pkeyopts'].value(args)
     mkdir['-p', dirname(self.filename_template.template)]()
 
   def _getFilename(self, ext):
@@ -31,7 +34,7 @@ class TLS:
 
   def make_key(self):
     fn = self._getFilename('key')
-    (reduce(lambda call, param: call['-pkeyopt', param], conf['openssl_pkeyopts'], openssl['genpkey', '-algorithm', 'RSA']) > fn)()
+    (reduce(lambda call, param: call['-pkeyopt', param], self.pkeyopts, openssl['genpkey', '-algorithm', 'RSA']) > fn)()
     return fn
 
   def make_csr(self):

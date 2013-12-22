@@ -9,11 +9,8 @@ class AddNginxSite(BaseAction):
     self._filename_template = filename_template
 
   def prepare(self, args):
-    from pystache import Renderer
-    renderer = Renderer(missing_tags='strict')
-
-    self._conf = renderer.render(self._conf_template, args)
-    self._conf_filename = self._filename_template.substitute(args)
+    self._conf = self._conf_template.value(args)
+    self._conf_filename = self._filename_template.value(args)
     super(AddNginxSite, self).prepare(args)
     return {}
 

@@ -11,13 +11,14 @@ class TestAddsite(unittest.TestCase):
       'tls_crt_path': 'file.crt'
     }
 
+    from purplehosts.config import valFromDef
     import purplehosts.test.mock_config
-    purplehosts.test.mock_config.get.return_value = {
-      'filename_template': 'file.$ext', # TLS
-      'system_user_name_template': '$host',
-      'nginx_conf_filename_template': '/etc/nginx/$host.conf',
-    }
-    purplehosts.test.mock_config.getFile.return_value = "{{host}} {{fqdn}} nginx {{tls_crt_path}} {{username}}"
+    purplehosts.test.mock_config.setConf({
+      'filename_template': ('file.$ext', 'StringTemplate'), # TLS
+      'system_user_name_template': ('$host', 'StringTemplate'),
+      'nginx_conf_filename_template': ('/etc/nginx/$host.conf', 'StringTemplate'),
+    })
+    purplehosts.test.mock_config.FileConfValue.return_value.value.return_value = "{{host}} {{fqdn}} nginx {{tls_crt_path}} {{username}}"
 
     import purplehosts.addsite
 

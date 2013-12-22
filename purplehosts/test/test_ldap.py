@@ -1,23 +1,24 @@
 import unittest
-from mock import Mock
-
-import purplehosts.test.mock_config
-
-purplehosts.test.mock_config.get.return_value = {
-  'people_root': 'PEOPLE_ROOT',
-  'groups_root': 'GROUPS_ROOT',
-  'bind_pw': 'BIND_PW',
-  'bind_dn': 'BIND_DN'
-}
-
-purplehosts.test.mock_config.getFile.return_value = "$username"
-
-from purplehosts.test.plumbum_mock import commandMock
-
-import purplehosts.ldap
 
 class TestLdap(unittest.TestCase):
   def test_add(self):
+    from mock import Mock
+
+    from purplehosts.config import valFromDef
+    import purplehosts.test.mock_config
+
+    purplehosts.test.mock_config.setConf({
+      'people_root': 'PEOPLE_ROOT',
+      'groups_root': 'GROUPS_ROOT',
+      'bind_pw': 'BIND_PW',
+      'bind_dn': 'BIND_DN'
+    })
+
+    purplehosts.test.mock_config.FileConfValue.return_value.value.return_value = "$username"
+
+    from purplehosts.test.plumbum_mock import commandMock
+
+    import purplehosts.ldap
 
     purplehosts.ldap.add({
       'username': 'TEST'

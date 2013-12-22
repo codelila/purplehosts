@@ -1,13 +1,11 @@
-from string import Template
-
 from purplehosts.actionbundle import ActionBundle
 
 import purplehosts.config
 conf = purplehosts.config.get('addsite')
 
-username_tpl = Template(conf['system_user_name_template'])
-nginx_conf_tpl = purplehosts.config.getFile('site_nginx.conf')
-nginx_conf_filename_tpl = Template(conf['nginx_conf_filename_template'])
+username_tpl = conf['system_user_name_template']
+nginx_conf_tpl = purplehosts.config.valFromDef(('site_nginx.conf', 'File', 'MustacheTemplate'))
+nginx_conf_filename_tpl = conf['nginx_conf_filename_template']
 
 def _parseArg(sub_dict, arg):
   (argname, _, argval) = arg.partition('=')

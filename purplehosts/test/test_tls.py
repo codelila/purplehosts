@@ -1,12 +1,13 @@
 import unittest
 from mock import patch
 
+from purplehosts.config import valFromDef
 import purplehosts.test.mock_config
 
-purplehosts.test.mock_config.get.return_value = {
-  'filename_template': '/etc/ssl/$domain/$host.$ext',
+purplehosts.test.mock_config.setConf({
+  'filename_template': ('/etc/ssl/$domain/$host.$ext', 'StringTemplate'),
   'openssl_pkeyopts': []
-}
+})
 
 from purplehosts.test.plumbum_mock import commandMock
 import purplehosts.tls
@@ -29,10 +30,10 @@ class TestTls(unittest.TestCase):
     self.assertEqual(keypath, '/etc/ssl/example.org/test.key')
 
   def test_make_key_with_pkeyopts(self):
-    purplehosts.test.mock_config.get.return_value = {
-      'filename_template': '/etc/ssl/$domain/$host.$ext',
+    purplehosts.test.mock_config.setConf({
+      'filename_template': ('/etc/ssl/$domain/$host.$ext', 'StringTemplate'),
       'openssl_pkeyopts': ['op:value']
-    }
+    })
     reload(purplehosts.tls)
     self.setUp()
 
