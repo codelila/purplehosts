@@ -26,20 +26,20 @@ class ConfValue:
     self._upstream = upstream
 
 class PlainConfValue(ConfValue):
-  def value(self, context):
+  def value(self, context={}):
     return self._upstream
 
 class StringTemplateConfValue(ConfValue):
-  def value(self, context):
+  def value(self, context={}):
     from string import Template
     return Template(self._upstream(context)).substitute(context)
 
 class MustacheTemplateConfValue(ConfValue):
-  def value(self, context):
+  def value(self, context={}):
     from pystache import Renderer
     renderer = Renderer(missing_tags='strict')
     return renderer.render(self._upstream(context), context)
 
 class FileConfValue(ConfValue):
-  def value(self, context):
+  def value(self, context={}):
     return _getFile(self._upstream(context))

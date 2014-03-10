@@ -3,10 +3,12 @@ Requirements
 
   * plumbum
   * pystache
+  * python-ldap
 
 For tests
 
   * python-mock
+  * [surrogate](https://github.com/ikostia/surrogate)
 
 Setup
 -----
