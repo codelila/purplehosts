@@ -5,6 +5,7 @@ def run(args):
 
   pw = passwd.generate()
   mailAddress = args.mailaddress
+  domain = conf['domain'].value()
 
   ldap.add({
     'username': args.username,
@@ -12,14 +13,14 @@ def run(args):
     'surname': args.surname,
     'password': pw,
     'usernumber': str(ldap.nextUid()),
-    'groupnumber': str(conf['gid']),
+    'groupnumber': str(conf['gid'].value()),
     'mailaddress': mailAddress
   })
 
   mail.send({
-    'Subject': 'Account auf ' + conf['domain'],
+    'Subject': 'Account auf ' + domain,
     'To': mailAddress,
-    'From': "{0} <root@{0}>".format(conf['domain']),
+    'From': "{0} <root@{0}>".format(domain),
     'Body': """Hallo {0},
 
   Dein Account {1} auf {2} wurde angelegt.
@@ -27,5 +28,5 @@ def run(args):
   Dein Passwort: {3}
 
   Viel Spass,
-  {2}""".format(args.givenname, args.username, conf['domain'], pw)
+  {2}""".format(args.givenname, args.username, domain, pw)
   })
