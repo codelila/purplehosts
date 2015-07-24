@@ -3,10 +3,6 @@ from purplehosts.actionbundle import ActionBundle
 import purplehosts.config
 conf = purplehosts.config.get('addsite')
 
-username_tpl = conf['system_user_name_template']
-nginx_conf_tpl = purplehosts.config.valFromDef(('site_nginx.conf', 'File', 'MustacheTemplate'))
-nginx_conf_filename_tpl = conf['nginx_conf_filename_template']
-
 def _parseArg(sub_dict, arg):
   (argname, _, argval) = arg.partition('=')
   if argval == '':
@@ -27,16 +23,21 @@ def run(args):
 
   # Create actions list
   from purplehosts.action.createtlscert import CreateTLSCert
-  from purplehosts.action.addnginxsite import AddNginxSite
 
   actions = [
-    CreateTLSCert(),
-    AddNginxSite(conf_template = nginx_conf_tpl, filename_template = nginx_conf_filename_tpl)
+    CreateTLSCert()
   ]
+
+  if args.nginx:
+    from purplehosts.action.addnginxsite import AddNginxSite
+    nginx_conf_tpl = purplehosts.config.valFromDef(('site_nginx.conf', 'File', 'MustacheTemplate'))
+    nginx_conf_filename_tpl = conf['nginx_conf_filename_template']
+    actions.append(AddNginxSite(conf_template = nginx_conf_tpl, filename_template = nginx_conf_filename_tpl))
 
   # Crude hack: Do not add a new account if username is passed as arg
   if not 'username' in substitutes or not substitutes['username']:
     from purplehosts.action.addposixaccount import AddPosixAccount
+    username_tpl = conf['system_user_name_template']
     actions.insert(0, AddPosixAccount(username_template = username_tpl))
 
   actionbundle = ActionBundle(actions)
