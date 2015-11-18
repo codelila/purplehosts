@@ -5,8 +5,8 @@ upstream {{tech}}_{{host}} {
 server {
     listen              80;
     listen              443 ssl;
-    ssl_certificate     {{tls_paths.crt}};
-    ssl_certificate_key {{tls_paths.key}};
+    ssl_certificate     {{tls_crt_path}};
+    ssl_certificate_key {{tls_key_path}};
     server_name         {{fqdn}};
 
     location / {
