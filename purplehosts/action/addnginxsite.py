@@ -11,16 +11,19 @@ class AddNginxSite(BaseAction):
   def prepare(self, args):
     self._conf = self._conf_template.value(args)
     self._conf_filename = self._filename_template.value(args)
+    from plumbum.cmd import cat, ln, nginx
+    self._cat = cat
+    self._ln = ln
+    self._nginx = nginx
     super(AddNginxSite, self).prepare(args)
     return {}
 
   def execute(self):
     import os.path
-    from plumbum.cmd import cat, ln, nginx
 
-    (cat << self._conf > self._conf_filename)()
+    (self._cat << self._conf > self._conf_filename)()
 
-    ln['-s'](os.path.relpath(self._conf_filename, '/etc/nginx/sites-enabled/'), '/etc/nginx/sites-enabled/')
-    nginx('-t')
+    self._ln['-s'](os.path.relpath(self._conf_filename, '/etc/nginx/sites-enabled/'), '/etc/nginx/sites-enabled/')
+    self._nginx('-t')
 
     super(AddNginxSite, self).execute()
