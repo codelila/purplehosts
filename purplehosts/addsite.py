@@ -28,6 +28,12 @@ def run(args):
     CreateTLSCert()
   ]
 
+  if args.php:
+    from purplehosts.action.addphpfpmpool import AddPhpFpmPool
+    php5_fpm_tpl = purplehosts.config.valFromDef(('pool_php-fpm.conf', 'File', 'MustacheTemplate'))
+    php5_fpm_pool_conf_filename_tpl = conf['pool_php-fpm_conf_filename_template']
+    actions.append(AddPhpFpmPool(conf_template = php5_fpm_tpl, filename_template = php5_fpm_pool_conf_filename_tpl))
+
   if args.nginx:
     from purplehosts.action.addnginxsite import AddNginxSite
     nginx_conf_tpl = purplehosts.config.valFromDef(('site_nginx.conf', 'File', 'MustacheTemplate'))

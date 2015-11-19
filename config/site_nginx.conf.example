@@ -9,17 +9,32 @@ server {
     ssl_certificate_key {{tls_key_path}};
     server_name         {{fqdn}};
 
-    location / {
-        root            /home/{{username}}/public;
+    root            {{webroot}};
 
+{{#php}}
+    index index.php;
+{{/php}}
+
+    location / {
 {{#ldap-basic-auth}}
         auth_pam              "LDAP";
         auth_pam_service_name "nginx_ldap";
 {{/ldap-basic-auth}}
 
+{{#php}}
         try_files $uri @proxy;
+{{/php}
     }
 
+{{#php}
+    location ~ \.php(?:$|/) {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass {{tech}}_{{host}};
+    }
+
+{{/php}
+
+{{^php}}
     location @proxy {
         include         fastcgi_params;
 {{#ldap-basic-auth}}
@@ -29,3 +44,4 @@ server {
         proxy_redirect  off;
     }
 }
+{/php}}

@@ -6,6 +6,7 @@ from purplehosts import addsite
 
 parser = ArgumentParser(description='Adds a new site.')
 parser.add_argument('--nginx', action='store_true')
+parser.add_argument('--php', action='store_true')
 parser.add_argument('domain')
 #parser.add_argument('--ldap-basic-auth', dest='ldap_basic_auth', action='store_true')
 parser.add_argument('additional_args', nargs=REMAINDER)

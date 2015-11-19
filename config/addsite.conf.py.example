@@ -1,2 +1,3 @@
 system_user_name_template = ('${tech}_$host', 'StringTemplate')
 nginx_conf_filename_template = ('/etc/nginx/sites-available/$fqdn', 'StringTemplate')
+pool_php-fpm_conf_filename_template = ('/etc/php5/fpm/pool.d/$fqdn.conf', 'StringTemplate')
